@@ -29,14 +29,15 @@ jobs:
         with:
           go-version: ${{ matrix.go_version }}
 
-      - name: Build-DB
-        run: docker compose build
-
-      - name: Create-DB
+      - name: Start DB
         run: |
           docker compose up -d
-          echo "Aguardando o Postgres inicializar..."
-          sleep 20
+          echo "Aguardando Postgres aceitar conexões..."
+          until docker compose exec -T db pg_isready -U root; do
+            echo "Postgres ainda não está pronto, aguardando..."
+            sleep 2
+          done
+          echo "Postgres pronto!"
 
       - name: Test
         run: go test -v main_test.go
