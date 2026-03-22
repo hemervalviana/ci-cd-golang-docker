@@ -7,13 +7,22 @@ on:
     branches: [ '*' ]
 
 jobs:
-
   test:
     runs-on: ${{ matrix.os }}
+    # Definindo variáveis globais para este Job
+    env:
+      DB_HOST: localhost
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: root
+      DB_PORT: 5432
+    
     strategy:
       matrix:
-        go_version: ['1.18', '1.17', '>=1.18']
-        os: ['ubuntu-latest', 'ubuntu-18.04']
+        # Sugestão: Use versões mais recentes se possível (ex: 1.21)
+        go_version: ['1.18', '1.17', '1.21'] 
+        os: ['ubuntu-latest'] # ubuntu-18.04 está entrando em desuso
+
     steps:
     - uses: actions/checkout@v3
 
@@ -29,15 +38,12 @@ jobs:
       run: docker-compose up -d
 
     - name: Test
+      # O teste agora terá as variáveis de ambiente disponíveis para o database.go
       run: go test -v main_test.go 
       
-  
   build:
     needs: test
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: ['ubuntu-latest', 'ubuntu-18.04']
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Build
