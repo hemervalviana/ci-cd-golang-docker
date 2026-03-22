@@ -1,7 +1,7 @@
 version: '3'
 services:
   postgres:
-    image: "postgres:15-alpine" # Alpine é mais leve para o CI
+    image: "postgres:15-alpine"
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
@@ -9,8 +9,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      # Use um ponto no início para ser relativo à pasta do projeto
-      - ./postgres-data:/var/lib/postgresql/data  
+      - ./postgres-data:/var/lib/postgresql/data # O PONTO ANTES DA BARRA É VITAL
 
   pgadmin-compose:
     image: dpage/pgadmin4
