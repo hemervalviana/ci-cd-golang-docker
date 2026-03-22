@@ -9,12 +9,28 @@ on:
 jobs:
   test:
     runs-on: ${{ matrix.os }}
-    env:
-      DB_HOST: 127.0.0.1  # MUDE DE localhost PARA 127.0.0.1
+   env:
+      DB_HOST: 127.0.0.1  # Força o uso de IPv4 (evita o erro ::1)
       DB_USER: root
       DB_PASSWORD: root
       DB_NAME: root
       DB_PORT: 5432
+    
+    # ... (restante do código)
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: '1.21'
+      
+    - name: Create-DB
+      run: |
+        docker compose up -d
+        echo "Aguardando o Postgres inicializar..."
+        sleep 20 # Tempo extra para o banco criar os arquivos iniciais
     
     strategy:
       matrix:
