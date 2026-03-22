@@ -2,67 +2,50 @@ name: Go
 
 on:
   push:
-    branches: [ '*' ]
+    branches: ['*']
   pull_request:
-    branches: [ '*' ]
+    branches: ['*']
 
 jobs:
   test:
     runs-on: ${{ matrix.os }}
-   env:
-      DB_HOST: 127.0.0.1  # Força o uso de IPv4 (evita o erro ::1)
+    env:
+      DB_HOST: 127.0.0.1
       DB_USER: root
       DB_PASSWORD: root
       DB_NAME: root
       DB_PORT: 5432
-    
-    # ... (restante do código)
 
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: '1.21'
-      
-    - name: Create-DB
-      run: |
-        docker compose up -d
-        echo "Aguardando o Postgres inicializar..."
-        sleep 20 # Tempo extra para o banco criar os arquivos iniciais
-    
     strategy:
       matrix:
-        go_version: ['1.21'] # Simplifiquei para focar no erro, mas pode manter as outras
+        go_version: ['1.21']
         os: ['ubuntu-latest']
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: ${{ matrix.go_version }}
-      
-    - name: Build-DB
-      # Comando atualizado para Docker Compose V2
-      run: docker compose build
-      
-    - name: Create-DB
-      # Subindo o banco e aguardando ele ficar pronto
-      run: |
-        docker compose up -d
-        echo "Aguardando 10 segundos para o Postgres inicializar..."
-        sleep 10
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ matrix.go_version }}
 
-    - name: Test
-      run: go test -v main_test.go 
-      
+      - name: Build-DB
+        run: docker compose build
+
+      - name: Create-DB
+        run: |
+          docker compose up -d
+          echo "Aguardando o Postgres inicializar..."
+          sleep 20
+
+      - name: Test
+        run: go test -v main_test.go
+
   build:
     needs: test
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Build
-      run: go build -v main.go
+      - uses: actions/checkout@v3
+
+      - name: Build
+        run: go build -v main.go
