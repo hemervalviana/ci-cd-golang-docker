@@ -10,7 +10,7 @@ jobs:
   test:
     runs-on: ${{ matrix.os }}
     env:
-      DB_HOST: localhost
+      DB_HOST: 127.0.0.1  # MUDE DE localhost PARA 127.0.0.1
       DB_USER: root
       DB_PASSWORD: root
       DB_NAME: root
